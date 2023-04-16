@@ -450,4 +450,42 @@ private:
 	};
 	SelfMeasurement mMeasurement;
 };
+
+
+template <class FunctionA, class FunctionB>
+inline void ParallelInvoke(FunctionA&& functionA, FunctionB&& functionB)
+{
+	if (ion::core::gSharedScheduler)
+	{
+		ion::core::gSharedScheduler->ParallelInvoke(std::forward<decltype(functionA)>(functionA),
+													std::forward<decltype(functionB)>(functionB));
+	}
+	else
+	{
+		functionA();
+		functionB();
+	}
+}
+
+template <class Function>
+inline void ParallelForIndex(const size_t start, const size_t end, const ion::UInt partitionSize, const ion::UInt batchSize,
+							 Function&& function) noexcept
+{
+	ion::JobScheduler::IndexIterator startIter(start);
+	const ion::JobScheduler::IndexIterator endIter(end);
+	if (ion::core::gSharedScheduler)
+	{
+		ion::core::gSharedScheduler->ParallelFor(partitionSize, startIter, endIter, std::forward<decltype(function)>(function), batchSize);
+	}
+	else
+	{
+		while (startIter != endIter)
+		{
+			function(startIter.mValue);
+			++startIter;
+		}
+	}
+}
+
+
 }  // namespace ion
