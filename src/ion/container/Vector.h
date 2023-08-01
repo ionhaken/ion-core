@@ -181,10 +181,10 @@ public:
 		mProxy.mImpl.Resize(mProxy, ion::SafeRangeCast<size_type>(s), ion::SafeRangeCast<size_type>(newCapacity));
 	}
 
-	// Resize container to given size. Only trivial types supported.
+	// Resize container to given size. For trivial types this is done without memsetting memory to zero.
 	inline void ResizeFast(size_t s) { mProxy.mImpl.ResizeFast(mProxy, ion::SafeRangeCast<size_type>(s)); }
 
-	// Resize container to given size and capacity. Only trivial types supported.
+	// Resize container to given size and capacity. For trivial types this is done without memsetting memory to zero.
 	inline void ResizeFast(size_t s, size_t newCapacity)
 	{
 		mProxy.mImpl.ResizeFast(mProxy, ion::SafeRangeCast<size_type>(s), ion::SafeRangeCast<size_type>(newCapacity));

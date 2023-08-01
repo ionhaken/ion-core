@@ -35,17 +35,17 @@ bool BufferWriterUnsafe::Extend(ByteSizeType newAvailableCount)
 
 bool ByteWriter::Extend(ByteSizeType newAvailableCount)
 {
-	size_t pos = size_t(mParent.mPos - mSource.Begin());
-	size_t startPos = size_t(mParent.mStart - mSource.Begin());
-	mSource.Extend(ion::SafeRangeCast<ByteSizeType>(newAvailableCount + pos));
-	mParent.mPos = mSource.Begin() + pos;
-	mParent.mStart = mSource.Begin() + startPos;
-	mEnd = mSource.Begin() + mSource.Capacity();
+	size_t pos = size_t(mParent.mPos - mSource->Begin());
+	size_t startPos = size_t(mParent.mStart - mSource->Begin());
+	mSource->Extend(ion::SafeRangeCast<ByteSizeType>(newAvailableCount + pos));
+	mParent.mPos = mSource->Begin() + pos;
+	mParent.mStart = mSource->Begin() + startPos;
+	mEnd = mSource->Begin() + mSource->Capacity();
 	if (Available() >= newAvailableCount)
 	{
 		return true;
 	}
-	ION_ABNORMAL("Out of memory; Available=" << Available() << ";Capacity=" << mSource.Capacity());
+	ION_ABNORMAL("Out of memory; Available=" << Available() << ";Capacity=" << mSource->Capacity());
 	return false;
 }
 bool ByteWriter::Copy(ByteReader& src)

@@ -236,7 +236,7 @@ void Track(Layer layerIndex, uint32_t size, ion::MemTag tag)
 	layer.memoryCountDelta[tag] += size;
 	layer.allocCountDelta[tag]++;
 	
-	/*if (layerIndex == Layer::Global && tag == ion::tag::Network && size == 80)
+	/*if (layerIndex == Layer::Global && tag == ion::tag::Test && size == 16)
 	{
 		ION_LOG_FMT_IMMEDIATE("+%zu", size);
 	}*/
@@ -247,7 +247,7 @@ void Untrack(Layer layerIndex, uint32_t size, ion::MemTag tag)
 	auto& layer = gTracker->mTrackedLayers[int(layerIndex)];
 	layer.memoryBlockCount[tag]--;
 	layer.memoryCount[tag] -= size;
-	/*if (layerIndex == Layer::Global && tag == ion::tag::Network && size == 80)
+	/*if (layerIndex == Layer::Global && tag == ion::tag::Test && size == 16)
 	{
 		ION_LOG_FMT_IMMEDIATE("-%zu", size);
 	}*/
