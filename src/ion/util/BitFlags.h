@@ -31,12 +31,28 @@ public:
 		}
 	}
 
+	BitFlags() : mState(0) {}
+
 	constexpr BitFlags(ContainerType value) : mState(value) {}
+
 	template <Type TFlag>
 	void Toggle()
 	{
 		mState = ContainerType(int(mState) ^ (1 << int(TFlag)));
 	}
+
+	template <Type TFlag>
+	void Set()
+	{
+		mState = ContainerType(int(mState) | (1 << int(TFlag)));
+	}
+
+	template <Type TFlag>
+	void Clear()
+	{
+		mState = ContainerType(int(mState) & ~(1 << int(TFlag)));
+	}
+
 	template <Type TFlag>
 	constexpr bool IsSet() const
 	{

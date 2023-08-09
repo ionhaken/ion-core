@@ -61,7 +61,9 @@ struct MemHeader
 
 	void Clear()
 	{
-		ION_ASSERT_FMT_IMMEDIATE(guard1 == 0xAA55AA55 && guard2 == 0xAA55AA55, "Mem block header corrupted (guard)");
+		ION_ASSERT_FMT_IMMEDIATE(guard1 == 0xAA55AA55 && guard2 == 0xAA55AA55, 
+			(guard1 == 0xDDDDDDDD || guard2 == 0xDDDDDDDD) ? 
+			"Duplicate delete?" : "Mem block header corrupted (guard)");
 		ION_ASSERT_FMT_IMMEDIATE(alignment % 4 == 0, "Mem block header corrupted (align)");
 		memset(this, 0xDD, sizeof(MemHeader));
 	}

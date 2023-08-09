@@ -54,6 +54,8 @@ public:
 	}
 	void* mContext = nullptr;
 
+	size_t Available() { return size_t(mEnd - mBuffer); }
+
 private:
 	const char* mBuffer;
 	const char* mEnd;

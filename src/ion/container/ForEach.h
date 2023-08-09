@@ -32,7 +32,10 @@ template <typename Container, typename Iterator>
 inline Iterator UnorderedErase(Container& container, Iterator iter)
 {
 	ION_ASSERT_FMT_IMMEDIATE(iter != container.End(), "Invalid iterator");
-	*iter = std::move(container.Back());
+	if (iter != (container.End()-1))
+	{
+		*iter = std::move(container.Back());
+	}
 	container.Pop();
 	return iter;
 }
@@ -41,7 +44,10 @@ inline Iterator UnorderedErase(Container& container, Iterator iter)
 template <typename Container>
 inline void UnorderedEraseAt(Container& container, size_t index)
 {
-	container[index] = std::move(container.Back());
+	if (index != container.Size() - 1)
+	{
+		container[index] = std::move(container.Back());
+	}
 	container.Pop();
 }
 

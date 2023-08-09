@@ -39,13 +39,17 @@ public:
 	void operator=(Ptr const&&) = delete;
 	void operator=(Ptr&& other)
 	{
+		ION_ASSERT(&other != this, "Assigning to self");
 		ION_ASSERT(mData == nullptr, "Pointer is leaking memory");
 		mData = other.mData;
 		other.mData = nullptr;
 	}
 	Ptr(Ptr const&& other) : mData(std::move(other.mData)) { other.mData = nullptr; }
 
-	Ptr(Ptr&& other) : mData(std::move(other.mData)) { other.mData = nullptr; }
+	Ptr(Ptr&& other) : mData(std::move(other.mData)) 
+	{ 		
+		other.mData = nullptr; 
+	}
 
 	T& operator[](size_t index)
 	{

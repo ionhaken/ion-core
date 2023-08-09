@@ -114,8 +114,10 @@ public:
 
 	BufferWriterUnsafe& operator=(BufferWriterUnsafe&& other) noexcept
 	{
+		ION_ASSERT(this != &other, "Move to self");
 		mParent = std::move(other.mParent);
 		mSource = other.mSource;
+		other.mSource = nullptr;
 		return *this;
 	}
 
@@ -152,7 +154,10 @@ public:
 	}
 
 	template <typename T>
-	inline bool Process(const T& t);
+	inline bool Process(const T& t)
+	{
+		mParent.Process(t);
+	}
 
 	template <typename Callback>
 	size_t WriteDirectly(Callback&& callback)
@@ -180,19 +185,38 @@ private:
 class ByteWriter
 {
 public:
-	ION_CLASS_NON_COPYABLE_NOR_MOVABLE(ByteWriter);
+	ION_CLASS_NON_COPYABLE(ByteWriter);
 
-	ByteWriter(ByteBufferBase& ud) : mParent(ud.Begin() + ud.Size()), mEnd(ud.Begin() + ud.Capacity()), mSource(ud)
+	ByteWriter(ByteBufferBase& ud) : mParent(ud.Begin() + ud.Size()), mEnd(ud.Begin() + ud.Capacity()), mSource(&ud)
 	{
 		ION_ASSERT(mParent.mStart <= mParent.mPos, "Invalid mBuffer");
 		ION_ASSERT(mEnd >= mParent.mPos, "Invalid mBuffer");
-		mSource.OnStartWriting();
+		mSource->OnStartWriting();
 	}
+
+	ByteWriter(ByteWriter&& other) noexcept : mParent(std::move(other.mParent)),mEnd(other.mEnd), mSource(std::move(other.mSource))
+	{
+		other.mSource = nullptr;
+	}
+
+	ByteWriter& operator=(ByteWriter&& other) noexcept
+	{
+		ION_ASSERT(this != &other, "Move to self");
+		mParent = std::move(other.mParent);
+		mEnd = other.mEnd;
+		mSource = other.mSource;
+		other.mSource = nullptr;
+		return *this;
+	}
+
 
 	~ByteWriter()
 	{
 		ION_ASSERT(mEnd >= mParent.mPos, "Invalid mBuffer");
-		mSource.OnStopWriting(mParent.mPos);
+		if (mSource)
+		{
+			mSource->OnStopWriting(mParent.mPos);
+		}
 	}
 
 	// Requests writable block from buffer. Buffer must be aligned correctly
@@ -266,6 +290,13 @@ public:
 	template <typename T>
 	inline bool Process(const T& t);
 
+	void Flush()
+	{
+		mSource->OnStopWriting(mParent.mPos);
+		mSource = nullptr;
+	}
+
+
 	ION_FORCE_INLINE size_t NumBytesUsed() const { return mParent.NumBytesUsed(); }
 
 	template <typename Callback>
@@ -281,6 +312,6 @@ private:
 
 	ByteWriterUnsafe mParent;
 	u8* mEnd;
-	ByteBufferBase& mSource;
+	ByteBufferBase* mSource;
 };
 }  // namespace ion

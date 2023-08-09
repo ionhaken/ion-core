@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ion/string/String.h>
+#include <ion/string/StringWriter.h>
 #include <ion/string/StringSerialization.h>
 
 namespace ion
@@ -37,7 +37,8 @@ private:
 	void Write(const T& value, size_t maxLen)
 	{
 		mString.Resize(maxLen + mWritePos);
-		mWritePos += ion::serialization::Serialize(value, &mString.Data()[mWritePos], maxLen, nullptr);
+		ion::StringWriter writer(&mString.Data()[mWritePos], maxLen);
+		mWritePos += ion::serialization::Serialize(value, writer);
 	}
 
 	Buffer& mString;

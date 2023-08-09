@@ -9956,6 +9956,7 @@ namespace Catch {
     :   m_data( data ),
         m_stream( openStream() )
     {
+        ION_MEMORY_SCOPE(::ion::tag::IgnoreLeaks);
         // We need to trim filter specs to avoid trouble with superfluous
         // whitespace (esp. important for bdd macros, as those are manually
         // aligned with whitespace).
@@ -10021,6 +10022,7 @@ namespace Catch {
     std::chrono::milliseconds Config::benchmarkWarmupTime() const { return std::chrono::milliseconds(m_data.benchmarkWarmupTime); }
 
     IStream const* Config::openStream() {
+        ION_MEMORY_SCOPE(::ion::tag::IgnoreLeaks);
         return Catch::makeStream(m_data.outputFilename);
     }
 
@@ -13308,7 +13310,8 @@ namespace Catch {
         }
 
         IStreamingReporterPtr makeReporter(std::shared_ptr<Config> const& config) {
-            if (Catch::getRegistryHub().getReporterRegistry().getListeners().empty()) {
+            ION_MEMORY_SCOPE(::ion::tag::IgnoreLeaks);
+            if (Catch::getRegistryHub().getReporterRegistry().getListeners().empty()) {                
                 return createReporter(config->getReporterName(), config);
             }
 
@@ -13515,14 +13518,20 @@ namespace Catch {
     }
 
     int Session::run() {
-        if( ( m_configData.waitForKeypress & WaitForKeypress::BeforeStart ) != 0 ) {
-            Catch::cout() << "...waiting for enter/ return before starting" << std::endl;
-            static_cast<void>(std::getchar());
+        {
+            ION_MEMORY_SCOPE(::ion::tag::IgnoreLeaks);
+            if( ( m_configData.waitForKeypress & WaitForKeypress::BeforeStart ) != 0 ) {
+                Catch::cout() << "...waiting for enter/ return before starting" << std::endl;
+                static_cast<void>(std::getchar());
+            }
         }
         int exitCode = runInternal();
-        if( ( m_configData.waitForKeypress & WaitForKeypress::BeforeExit ) != 0 ) {
-            Catch::cout() << "...waiting for enter/ return before exiting, with code: " << exitCode << std::endl;
-            static_cast<void>(std::getchar());
+        {
+            ION_MEMORY_SCOPE(::ion::tag::IgnoreLeaks);
+            if( ( m_configData.waitForKeypress & WaitForKeypress::BeforeExit ) != 0 ) {
+                Catch::cout() << "...waiting for enter/ return before exiting, with code: " << exitCode << std::endl;
+                static_cast<void>(std::getchar());
+            }
         }
         return exitCode;
     }
@@ -14547,6 +14556,7 @@ namespace TestCaseTracking {
             section = std::static_pointer_cast<SectionTracker>( childTracker );
         }
         else {
+            ION_MEMORY_SCOPE(::ion::tag::IgnoreLeaks);
             section = std::make_shared<SectionTracker>( nameAndLocation, ctx, &currentTracker );
             currentTracker.addChild( section );
         }
@@ -16596,6 +16606,7 @@ void ConsoleReporter::testGroupEnded(TestGroupStats const& _testGroupStats) {
     StreamingReporterBase::testGroupEnded(_testGroupStats);
 }
 void ConsoleReporter::testRunEnded(TestRunStats const& _testRunStats) {
+    ION_MEMORY_SCOPE(::ion::tag::IgnoreLeaks);
     printTotalsDivider(_testRunStats.totals);
     printTotals(_testRunStats.totals);
     stream << std::endl;
@@ -16785,6 +16796,7 @@ void ConsoleReporter::printSummaryDivider() {
 }
 
 void ConsoleReporter::printTestFilters() {
+    ION_MEMORY_SCOPE(::ion::tag::IgnoreLeaks);
     if (m_config->testSpec().hasFilters()) {
         Colour guard(Colour::BrightYellow);
         stream << "Filters: " << serializeFilters(m_config->getTestsOrTags()) << '\n';
