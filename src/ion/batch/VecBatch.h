@@ -28,13 +28,13 @@ class RawBatch
 	using T = xsimd::batch<Type, N>;
 
 	template <size_t A, class Dest, class Source = Dest>
-	static ION_FORCE_INLINE xsimd::batch_bool<Dest, A> BatchBoolCast(const xsimd::batch_bool<Source, A>& x) noexcept
+	static inline xsimd::batch_bool<Dest, A> BatchBoolCast(const xsimd::batch_bool<Source, A>& x) noexcept
 	{
 		return xsimd::batch_bool<Dest, A>(xsimd::batch_cast<Dest>(xsimd::batch<Source, A>(x()) /*.data*/));
 	}
 
 	template <size_t A, class Dest, class Source = Dest>
-	static ION_FORCE_INLINE xsimd::batch<Dest, A> BatchCast(const xsimd::batch<Source, A>& x) noexcept
+	static inline xsimd::batch<Dest, A> BatchCast(const xsimd::batch<Source, A>& x) noexcept
 	{
 		return xsimd::batch_cast<Dest>(x);
 	}
@@ -608,24 +608,45 @@ struct BaseType<Batch<T, s>>
 	using type = T;
 };
 
-template <size_t N>
-[[nodiscard]] inline Batch<float, N> Abs(const Batch<float, N>& a)
+[[nodiscard]] inline Float32Batch Abs(const Float32Batch& a)
 {
 #if ION_SIMD
-	return Batch<float, N>(xsimd::fabs(a.Raw()));
+	return Float32Batch(xsimd::fabs(a.Raw()));
 #else
-	return Batch<float, N>(ion::Abs(a.Raw()));
+	Float32Batch out;
+	for (size_t i = 0; i < Float32Batch::ElementCount; ++i)
+	{
+		out.Set(i, ion::Abs(a[i]));		
+	}
+	return out;
 #endif
 }
 
-template <size_t N>
-[[nodiscard]] inline Batch<float, N> atan2(const Batch<float, N>& a, const Batch<float, N>& b)
+[[nodiscard]] inline Float32Batch WrapValue(const Float32Batch& a, float limit)
+{
+#if ION_SIMD	
+	auto first = xsimd::select(a.Raw() > limit, a.Raw() - limit * 2, a.Raw());
+	return Float32Batch(xsimd::select(first < -limit, first + limit * 2, first));
+#else
+	Float32Batch out;
+	for (size_t i = 0; i < Float32Batch::ElementCount; ++i)
+	{
+		float first = a[i] > limit ? a[i] - limit * 2 : a[i];
+		first = first < -limit ? first + limit * 2 : first;
+		out.Set(i, first);
+		
+	}
+	return out;
+#endif
+}
+
+[[nodiscard]] inline Float32Batch atan2(const Float32Batch& a, const Float32Batch& b)
 {
 #if ION_SIMD
-	return Batch<float, N>(xsimd::atan2(a.Raw(), b.Raw()));
+	return Float32Batch(xsimd::atan2(a.Raw(), b.Raw()));
 #else
-	Batch<float, N> out;
-	for (size_t i = 0; i < N; ++i)
+	Float32Batch out;
+	for (size_t i = 0; i < Float32Batch::ElementCount; ++i)
 	{
 		out.Set(i, std::atan2(a[i], b[i]));
 	}
