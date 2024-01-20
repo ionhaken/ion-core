@@ -53,8 +53,9 @@ Internal coding guidelines
   - We do not use c++ features that would reduce our platform support.
 
 * No exceptions
-  - Exception handling is slow, therefore we do not let the code raise exceptions at all. 
-  - Exceptions are questionable from readability point of view. Code flow with error codes is pretty clear.
+  - No exceptions generate smaller binaries and, thus, basically snappier execution.
+  - Exception handling is slow.
+  - Similar to 'goto' statements, exceptions are questionable from readability point of view.
 
 * No RTTI
 
