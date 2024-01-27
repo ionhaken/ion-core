@@ -72,4 +72,4 @@ Current Limitations
 Getting Started
 ---------------
 
-You can use CMake or the unofficial way, which is to just take code under ion/ and 3rdpary/, and copy them over to your own project. Check that settings in ion/Config.h are correct. In your main() you need to add an instance of ion::Engine to support full Ion functionality.
+You can use CMake or the unofficial way, which is to just take code under ion/ and depend/, and copy them over to your own project. Check that settings in ion/Config.h are correct. In your main() you need to add an instance of ion::Engine to support full Ion functionality.
