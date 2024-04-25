@@ -608,15 +608,16 @@ struct BaseType<Batch<T, s>>
 	using type = T;
 };
 
-[[nodiscard]] inline Float32Batch Abs(const Float32Batch& a)
+template<>
+[[nodiscard]] inline ion::Batch<float, 4> Absf(const ion::Batch<float, 4> a)
 {
 #if ION_SIMD
-	return Float32Batch(xsimd::fabs(a.Raw()));
+	return ion::Batch<float, 4>(xsimd::fabs(a.Raw()));
 #else
-	Float32Batch out;
-	for (size_t i = 0; i < Float32Batch::ElementCount; ++i)
+	ion::Batch<float, 4> out;
+	for (size_t i = 0; i < 4; ++i)
 	{
-		out.Set(i, ion::Abs(a[i]));		
+		out.Set(i, ion::Absf(a[i]));		
 	}
 	return out;
 #endif
