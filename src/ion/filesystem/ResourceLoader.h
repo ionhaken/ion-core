@@ -24,6 +24,7 @@ struct FileLoadingContext
 	  : mTarget(target), mFolder(folder), mJs(js), mProcessorRegistry(dataProcessorRegistry)
 	{
 	}
+
 	StringView mTarget;
 	Folder& mFolder;
 	JobScheduler& mJs;
